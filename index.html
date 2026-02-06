@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Alarma de 30 Minutos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #timer {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #2c3e50;
+        }
+        button {
+            padding: 10px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Temporizador Cíclico</h2>
+    <div id="timer">30:00</div>
+    <button onclick="iniciarAlarma()">Iniciar Alarma</button>
+    <p class="status" id="status">Haz clic para comenzar el ciclo de 30 min.</p>
+</div>
+
+<audio id="sonidoAlarma" src="alarma.mp3" preload="auto"></audio>
+
+<script>
+    let tiempoRestante = 30 * 60; // 30 minutos en segundos
+    let intervalo;
+    const display = document.querySelector('#timer');
+    const sonido = document.getElementById('sonidoAlarma');
+    const statusText = document.getElementById('status');
+
+    function actualizarTimer() {
+        let minutos = Math.floor(tiempoRestante / 60);
+        let segundos = tiempoRestante % 60;
+
+        minutos = minutos < 10 ? '0' + minutos : minutos;
+        segundos = segundos < 10 ? '0' + segundos : segundos;
+
+        display.textContent = `${minutos}:${segundos}`;
+
+        if (tiempoRestante <= 0) {
+            sonido.play().catch(error => console.log("Error al reproducir: ", error));
+            statusText.textContent = "¡Alarma sonando! Reiniciando ciclo...";
+            tiempoRestante = 30 * 60; // Reinicia a 30 minutos automáticamente
+        } else {
+            tiempoRestante--;
+        }
+    }
+
+    function iniciarAlarma() {
+        // Detener cualquier intervalo previo
+        clearInterval(intervalo);
+        
+        // El navegador bloquea el audio si no hay interacción previa, 
+        // por eso iniciamos al hacer clic.
+        statusText.textContent = "Alarma activa: sonará cada 30 minutos.";
+        
+        intervalo = setInterval(actualizarTimer, 1000);
+    }
+</script>
+
+</body>
+</html>
